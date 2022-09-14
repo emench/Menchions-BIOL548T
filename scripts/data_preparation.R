@@ -4,12 +4,12 @@
 # Emma Menchions, Sept 10/22
 # This script is to prepare the data from Thiffault et al. (2016) for another analysis
 
-install.packages("groundhog")
+#install.packages("groundhog")
 library(groundhog)
 
 # installing & loading packages
 date <- "2022-09-02"
-requiredPackages <-  c("here", "tidyverse","Rfast","dplyr")
+requiredPackages <-  c("here", "tidyverse","tidyr","Rfast","dplyr")
 
 for (pkg in requiredPackages) {
   if (pkg %in% rownames(installed.packages()) == FALSE)
@@ -19,11 +19,11 @@ for (pkg in requiredPackages) {
 }
 
 # Loading data tables ----
-X_mat <- read.csv(here::here("doi_10.5061_dryad.4767v__v1/Data_ThiffaultEtAl_EcoEvo/Matrice_X.csv"),
+X_mat <- read.csv(here::here("data","Matrice_X.csv"),
                   sep = ";") # explanatory variables - see metadata
-Y_mat <- read.csv(here::here("doi_10.5061_dryad.4767v__v1/Data_ThiffaultEtAl_EcoEvo/Matrice_Y.csv"),
+Y_mat <- read.csv(here::here("data","Matrice_Y.csv"),
                   sep = ";") # response variables (mean ericaceous cover, in %)
-clim <- read.csv(here::here("doi_10.5061_dryad.4767v__v1/Data_ThiffaultEtAl_EcoEvo/Climate_value.csv"),
+clim <- read.csv(here::here("data","Climate_value.csv"),
                  sep = ";") # numerical codes used for clim vars in X_mat
 
 # Classifying Forest Type ----
@@ -112,12 +112,13 @@ X_mat <- X_mat %>%
   mutate(., RainFall = case_when(PRECU < med ~ "L", 
             PRECU >= med ~ "H")) 
 # Combining and classifying as forest type - rainfall index
+library(tidyr)
 X_mat <- 
   X_mat %>% 
   unite(., rf_index, c("RainFall","Forest_Type"), sep = "_", remove =F, na.rm = FALSE)
 
 # writing altered data as .csv ----
-write.csv(X_mat, here::here("X_mat_processed.csv"))
+write.csv(X_mat, here::here("data","X_mat_processed.csv"))
   
 
     
