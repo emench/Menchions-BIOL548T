@@ -1,0 +1,61 @@
+---
+title: "Manuscript"
+author: "Emma Menchions"
+date: "`r Sys.Date()`"
+output: pdf_document
+geometry: margin = 1in
+head-includes:
+  - \isepackages{setspace}
+  - \soublespacing
+  - \usepackage{lineno}
+  - \linenumbers
+  - \usepackage{fontspec}
+  - \setmainfont{Times New Roman} 
+csl: 
+bibliography: references.bib
+output:
+  pdf_document:
+    
+    # can also do word_document - but have to manually format in word 
+    latec\x_engine: xelatex
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# can put code chunks here
+```
+
+# Title:
+
+## Abstract
+
+Citation [@fraser2018]
+
+## **Introduction**
+
+## **Methods**
+
+## **Results**
+
+## Discussion
+
+## References
+
+::
+
+## Tables
+
+Table 1. Caption
+
+```{r}
+
+```
+
+## Figure captions
+
+## Figures
+
+## Appendicies
