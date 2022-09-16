@@ -4,7 +4,15 @@
 # Emma Menchions, Sept 10/22
 # This script downloads the data from Thiffault et al. (2016) 
 
-library(here)
+## managing packages with groundhog
+
+#install.packages("groundhog")
+library(groundhog)
+
+date <- "2022-09-02"
+groundhog.library(here, date)
+
+# creating directory to store data
 dir.create("data")
 
 ## downloading from dryad url ----
