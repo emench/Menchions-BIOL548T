@@ -1,0 +1,130 @@
+---
+title           : "Preregistration for: Can gradients in annual rainfall & forest type predict the distribution & abundance of 4 Ericaceous shrubs? - BIOL 548T LDP"
+shorttitle      : "Preregistration"
+date            : "`r Sys.setlocale('LC_TIME', 'C'); format(Sys.time(), '%d\\\\. %B %Y')`"
+
+author: 
+  - name        : Emma Menchions
+    affiliation : 1
+
+affiliation:
+  - id          : 1
+    institution : University of British Columbia, Vancouver, BC
+
+output: prereg::prereg_pdf
+---
+
+**Study Information**
+-
+
+**1.Title**
+
+Can gradients in annual rainfall & forest type predict the distribution & abundance of 4 Ericaceous shrubs? - BIOL 548T LDP
+
+**2.	Authors**
+Emma Menchions – ORCid: https://orcid.org/0000-0003-2635-7043
+
+**3. Description & Research Question:**
+
+Four species of Ericaceae dominate the understory in the northern boreal forests of Quebec, Canada. Two of these species *Rhododenron groenlandicum* and *Chamaedaphne caluculata* are said to prefer acidic soils and wetter habitats whereas the other dominant species *Kalmia angustifolia*, *Vaccinium angustifolium*, and *Vaccinium myrtillodes* are known to prefer drier, but also acidic soils. Many factors contribute to soil acidity, but a few variables in particular, rainfall and forest type have been observed to drive broad patterns in soil pH in the United States (2). Therefore, I ask, can annual rainfall and forest type (conifer, deciduous, or mixed) predict patterns of abundance for these species in the boreal zone of Northern Quebec between 1985 and 2000?
+
+**4. Hypothesis & Prediction**
+
+Acidic soils are often associated with conifer forests and higher rainfall (1,2). Therefore, species with a preference for more acidic soils should be more often found in conifer forest types with higher precipitation. Therefore, I predict that *R. groenlandicum* and *C. calyculata*, will have the highest mean percent cover in areas with conifer forest types and higher annual precipitation. In contrast, I predict that *K. angustifolia* and *Vaccinium sp.*, will have the highest mean percent cover in conifer forests with lower annual precipitation. 
+
+Specifically, I predict the following pattern of mean percent cover for *R. groenlandicum* and *C. calyculata*: (H = high precipitation, L = low precipitation, c= conifer forests, d=deciduous forests, m =mixed forest)
+
+From highest to lowest predicted mean percent cover with high rainfall and conifer forests being indicative of higher abundance:
+H-c, L-c, H-m, H-d, L-m, L-d
+
+For *K. angustifolium* and *Vaccinium sp.* I predict the following pattern, with less rainfall being of greater importance to abundance:
+L-c, L-m, L-d, H-c, H-m, H-d
+
+**Design Plan**
+-
+
+**5.	Study type**
+
+Observational Study - Data is collected from study subjects that are not randomly assigned to a treatment. This includes surveys, natural experiments, and regression discontinuity designs.
+
+**Sampling Plan**
+-
+
+**7.	Existing data** (3)
+
+selected: "Registration following analysis of the data: As of the date of submission, you have accessed and analyzed some of the data relevant to the research plan. This includes preliminary analysis of variables, calculation of descriptive statistics, and observation of data distributions. Please see cos.io/prereg for more information." 
+
+
+**8.	Explanation of existing data** 
+
+This data was collected from another researcher and provided through open access (3). As of registration, the data has only been downloaded, and imported into R to explore the data organization structure. Additional variables were calculated based on thresholds and summary statistics but no data analyses have been performed yet. 
+
+**9.	Data collection procedures**
+
+Data retrieved from (3): https://datadryad.org/stash/dataset/doi:10.5061%2Fdryad.4767v
+
+- Abundance: According to Thiffault et al. (2016), the data on abundance of the 4 species were collected from 15,339 circular plots across central and northern Quebec along 1.5 – 2 km long transects of which supported 5-7 plots. 
+
+- Forest type: was determined by visual estimations at the time that the plots were visited by assigning a type corresponding to the two most dominant tree species within the plot.This lead to a total of 15 total forest types.
+
+- Climate data was collected by identifying the closest meteorological station (51 in the study region) and correcting for differences in latitude, longitude and elevation between the plot and the station using distance weighting and multiple linear regression.
+
+**10.	Sample size**
+
+1,422 observations 
+
+**Variables**
+-
+
+**11.	Measured variables**
+1)	Response variable = mean ericaceous shrub cover (%)
+2)	Explanatory variables:
+
+a.	Relative area of each forest type – (continuous) 
+
+b.	Useful precipitation (rain) (mm) (continuous) – I will consider this as annual rainfall
+
+**12. Index variables** 
+
+1) Forest_Type 
+    - I will categorize forest type based on the dominant two tree species in terms of relative area for each plot – to produce a variable with 3 possibilities (conifer, deciduous, mixed)
+    
+2) RainFall 
+    - I will use the median annual rainfall for all plots as a cutoff value to define low and high precipitation
+    
+3) rf_index (rainfall-forest type index)
+    - I will combine 1 and 2 into another categorical variable to assess the combined effects
+
+**Analysis Plan**
+-
+ 
+**13.	Statistical models** 
+
+I will use traditional boxplots to display differences between summary statistics. I will log transform the axes if data display is not effective with non-log transformed data. I will additionally use a Krusksal-Wallis test to determine if the means of mean percent cover differ between categories. I may also create simple linear regressions of mean percent cover with annual rainfall and log-transform the axes if needed. 
+
+**14.	Inference criteria**
+
+I will use the standard p-value criteria of p< 0.05 for determining significantly different means in the Kruskal-Wallis test (that the null hypothesis that all means are the same can be refuted)
+
+
+**15.	Data exclusion**
+
+I will treat data as outliers if they fall outside of the quartiles specified by the boxplots, but I will not remove them from the plots or from statistical analysis. 
+
+**References**
+-
+
+(1) Hornung, M. (1985). Acidification of soils by trees and forests. Soil Use and Management, 1(1), 24–27. https://doi.org/10.1111/j.1475-2743.1985.tb00648.x
+
+(2) Soil Acidity—An overview | ScienceDirect Topics. (n.d.). Retrieved September 11, 2022, from https://www.sciencedirect.com/topics/earth-and-planetary-sciences/soil-acidity
+
+(3) Thiffault, N., Grondin, P., Noël, J., & Poirier, V. (2015). Ecological gradients driving the distribution of four Ericaceae in boreal Quebec, Canada. Ecology and Evolution, 5(9), 1837–1853. https://doi.org/10.1002/ece3.1476
+
+
+```{=tex}
+\vspace{-2pc}
+\setlength{\parindent}{-0.5in}
+\setlength{\leftskip}{-1in}
+\setlength{\parskip}{8pt}
+```
+\noindent

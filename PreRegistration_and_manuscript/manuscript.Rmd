@@ -11,13 +11,11 @@ head-includes:
   - \linenumbers
   - \usepackage{fontspec}
   - \setmainfont{Times New Roman} 
+  
 csl: 
 bibliography: references.bib
-output:
-  pdf_document:
-    
     # can also do word_document - but have to manually format in word 
-    latec\x_engine: xelatex
+latec\x_engine: xelatex
 editor_options: 
   markdown: 
     wrap: 72
