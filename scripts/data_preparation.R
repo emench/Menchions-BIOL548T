@@ -112,7 +112,6 @@ X_mat <- X_mat %>%
   mutate(., RainFall = case_when(PRECU < med ~ "L", 
             PRECU >= med ~ "H")) 
 # Combining and classifying as forest type - rainfall index
-library(tidyr)
 X_mat <- 
   X_mat %>% 
   unite(., rf_index, c("RainFall","Forest_Type"), sep = "_", remove =F, na.rm = FALSE)
