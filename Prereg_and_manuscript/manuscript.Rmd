@@ -16,7 +16,7 @@ output:
     latex_engine: xelatex
     
 csl: https://www.zotero.org/styles/ecology-letters
-bibliography: references.bib
+bibliography: [references.bib,grateful-refs.bib]
 ---
 
 ```{r setup, include=FALSE, echo=FALSE}
@@ -28,7 +28,7 @@ library(groundhog)
 
 # installing & loading packages
 date <- "2022-09-02"
-requiredPackages <-  c("here", "tidyverse","tidyr","Rfast","dplyr")
+requiredPackages <-  c("ggplot2","here", "tidyverse","tidyr","Rfast","dplyr")
 
 for (pkg in requiredPackages) {
   if (pkg %in% rownames(installed.packages()) == FALSE)
@@ -37,11 +37,14 @@ for (pkg in requiredPackages) {
   {groundhog.library(pkg, date)}
 }
 
+# remotes::install_github("Pakillo/grateful")
+# library(grateful)
+# get_pkgs_info()
 ```
 
 **Title**: Can gradients in annual rainfall & forest type predict the distribution & abundance of 4 Ericaceous shrubs? - BIOL 548T LDP
 
-Emma Menchons^1^\*
+Emma Menchions^1^\*
 
 1.  Dept. of Botany, University of British Columbia, Vancouver, BC, Canada
 
@@ -51,27 +54,15 @@ email: emma.menchions\@botany.ubc.ca
 
 **Author Contributions:** EM conceived of the study, conducted the analyses, and wrote the original, and revised drafts of the manuscript.
 
-**Data Availability:** The data and code that support the findings of this study are openly available on Zenodo / GitHub at <https://link_to_archived_release_or_GitHub.com>.
-
-If I was publishing this as an HTML document and wanted the link to be pretty versus human readable, I would use [this format](https://link_to_archived_release_or_GitHub.com) instead
+**Data Availability:** The data and code that support the findings of this study are openly available on GitHub at <https://github.com/emench/Menchions-BIOL548T>.
 
 **Conflict of Interest statement**
 
 No conflicts of interest
 
-**Acknowledgements:** We would like to thank a whole bunch of people.
-
-\newpage
-
 # Abstract
 
-1.  Ecologists often have lots of questions about lots of stuff
-
-2.  We evaluated a bunch of things using sophisticated methods and carried out complicated statistical tests
-
-3.  We discovered a bunch of things that we didn't already know but suspected
-
-4.  Our research has greatly advanced out knowledge about stuff and will make a significant contribution to something and someone
+Patterns in plant distributions are driven by a multitude of factors, one of which is soil properties. For many ericaeceous shrubs, high acidity soils are often an important determinant of distribution. Here I used data collected from @thiffault2015c across plots in the understory of boreal forests of Quebec from 1985 to 2000 to determine if the abundance of four species of ericeceous shrubs (*Chamaedaphne caluculata, Rhododenron groenlandicum, Kalmia angustifolia* and*Vaccinium sp.* ) can be predicted by patterns in soil acidity with habitat. Specifically, since conifer forests with high rainfall are typically associated with more highly acidic soils, I predicted this habitat type would contain the highest abundance of of these shrubs, and in particular *C. caluculata and R. groenlandicum* since they also prefer wetter habitats. For *K. angustifolia* and*Vaccinium sp.* I predicted that low rainfall coniferous forests would contain the greatest abundance due to high acidity from the conifers and lower moisture which these species supposedly prefer. I used box plots and pariwise Wilcox tests to compare medians between percent cover of different types of habitats defined by high or low rain fall and forest type. I found that for *C. caluculata and R. groenlandicum,* my predictions were quite close to the observed patterns, suggesting that perhaps soil acidity and moisture are primary drivers of distribution. However, for *K. angustifolia* and*Vaccinium sp.* my predictions did not match the results. However, conifer forests and non-forested (presumably boggy areas) plots did tend to contain the highest median abundance which may also suggest soil acidity as a strong driver of distribution. Future studies and analyses should use more direct observations of soil pH measurements to study these patterns rather than relying on the proxy variable of rainfall and forest type used here to avoid the many confounding factors that this index introduces.
 
 **Key-words**: Ecology, Ericaceae, LDP, Plant Ecology, Vegetation Mapping, Vegetation Patterns
 
@@ -79,18 +70,428 @@ No conflicts of interest
 
 # Introduction
 
+Four species of Ericaceae dominate the understory in the northern boreal forests of Quebec, Canada. Two of these species *Rhododenron groenlandicum* and *Chamaedaphne caluculata* are said to prefer acidic soils and wetter habitats whereas the other dominant species *Kalmia angustifolia*, *Vaccinium angustifolium*, and *Vaccinium myrtillodes* are known to prefer drier, but also acidic soils. Many factors contribute to soil acidity, but a few variables in particular, rainfall and forest type have been observed to drive broad patterns in soil pH in the United States @soilaci. Therefore, I ask, can annual rainfall and forest type (conifer, deciduous, or mixed) predict patterns of abundance for these species in the boreal zone of Northern Quebec between 1985 and 2000?
+
+Acidic soils are often associated with conifer forests and higher rainfall [@hornung1985; @soilacia]. Therefore, species with a preference for more acidic soils should be more often found in conifer forest types with higher precipitation. Therefore, I predict that *R. groenlandicum* and *C. calyculata*, will have the highest mean percent cover in areas with conifer forest types and higher annual precipitation. In contrast, I predict that *K. angustifolia* and *Vaccinium sp.*, will have the highest mean percent cover in conifer forests with lower annual precipitation.
+
+Specifically, I predict the following pattern of mean percent cover for *R. groenlandicum* and *C. calyculata*: (H = high precipitation, L = low precipitation, c= conifer forests, d=deciduous forests, m =mixed forest)
+
+From highest to lowest predicted mean percent cover with high rainfall and conifer forests being indicative of higher abundance: H-c, L-c, H-m, H-d, L-m, L-d
+
+For *K. angustifolium* and *Vaccinium sp.* I predict the following pattern, with less rainfall being of greater importance to abundance: L-c, L-m, L-d, H-c, H-m, H-d
+
 # Methods
 
-To evaluate the ...
+**Data collection**
 
-The above demonstrates both "inline" and "display" math formats. If you look at the Source version you will see that it is simply the number of \$ symbols before and after that differentiates between the two. An excellent (and simple) guide on inserting math into your R Markdown documents can be found here:\
-<https://rpruim.github.io/s341/S19/from-class/MathinRmd.html>
+Data was retrieved from @thiffault2015a: <https://datadryad.org/stash/dataset/doi:10.5061%2Fdryad.4767v>. According to @thiffault2015b, the data on abundance of the 4 species were collected from 15,339 circular plots across central and northern Quebec along 1.5 -- 2 km long transects of which supported 5-7 plots. Forest type: was determined by visual estimations at the time that the plots were visited by assigning a type corresponding to the two most dominant tree species within the plot.This lead to a total of 15 total forest types. Climate data was collected by identifying the closest meteorological station (51 in the study region) and correcting for differences in latitude, longitude and elevation between the plot and the station using distance weighting and multiple linear regression.
 
-Statistical analyses were carried out in R 3.4.0 (R Core Team 2017). All code along with the simulation algorithms used are available on Zenodo / GitHub <https://link_to_archived_release_or_GitHub.com>.
+**Data download (script: "part-1_data_download")**
 
-# Results
+All data download, preparation and statistical analyses were carried out in R 4.2.1 (R Core Team 2022). All scripts used are available on GitHub <https://github.com/emench/Menchions-BIOL548T>. I first retrieved this data from Dryad using a script that automates the download from Dryad.
 
-# Discussion
+```{r eval=FALSE, warning=FALSE, include=FALSE}
+# creating directory to store data
+dir.create("data")
+
+## downloading from dryad url ----
+
+data.url <- "https://datadryad.org/stash/downloads/file_stream/41575"
+metadata.url <- "https://datadryad.org/stash/downloads/file_stream/41576"
+
+data.dest.file <- paste0("data/","Data_ThriffaultEtAl_EcoEvo_",Sys.Date(),".zip")
+metadata.dest.file <- paste0("data/","Metadata_ThriffaultEtAl_EcoEvo_",Sys.Date(),".txt")
+
+unzip(download.file(url = data.url, destfile = data.dest.file),exdir = here::here("data"))
+download.file(url= metadata.url, destfile = metadata.dest.file)
+
+unzip(list.files(path = here::here("data"), pattern = "*.zip", full.names = TRUE),exdir = here::here("data"))
+
+```
+
+**Data preparation (script: "part-2_data_preparation")**
+
+I then prepared the data for analysis by altering the forest type classification and creating a variable indicating whether the plot was in a high or low rainfall area. For the forest type classifications, I used the metadata on forest type codes provided to create 4 categories of forest type: "c" (coniferous, if the two dominant tree species in the plot were both coniferous, n=1282), "d" (deciduous, if the two dominant species were both deciduous, n=45), "m" (mixed, if the two most dominant species contained a conifer and a deciduous species, n=69), and "n" (non-forested, n=26).
+
+```{r, include=TRUE,echo=F}
+# Loading data tables ----
+X_mat <- read.csv(here::here("data","Matrice_X.csv"),
+                  sep = ";") # explanatory variables - see metadata
+Y_mat <- read.csv(here::here("data","Matrice_Y.csv"),
+                  sep = ";") # response variables (mean ericaceous cover, in %)
+clim <- read.csv(here::here("data","Climate_value.csv"),
+                 sep = ";") # numerical codes used for clim vars in X_mat
+
+# Classifying Forest Type ----
+# Identifying two most dominant tree species in each plot and assigning forest type as 
+  # conifer (c)
+  # deciduous (d)
+  # mixed (m)
+# looping through each row of X_mat dataframe
+
+for (i in 1:dim(X_mat)[1]){
+  most_abun <-  as.numeric(Rfast::nth(as.matrix(X_mat[i,2:14]), 
+                                      k=1, descending = T,index.return = T)) 
+  # returning the index of the column with the most abundant tree species for each row
+  sec_abun <- as.numeric(Rfast::nth(as.matrix(X_mat[i,2:14]), 
+                                    k=2, descending = T,index.return = T)) 
+  # returning index of second most abundant species
+  dominant_sp <- c(most_abun, sec_abun)+1 # adding 1 to account for the 
+  # first column which was left out of vector for previous function
+  dominant_sp <- colnames(X_mat)[dominant_sp] # creating character vector containing 
+  # column names of most dominant species 
+  
+  if (dominant_sp[1] == "AB" || # if both species conifers
+      dominant_sp[1] == "PB" ||
+      dominant_sp[1] == "PM"||
+      dominant_sp[1] == "PM_AB" ||
+      dominant_sp[1] == "TO" &&
+      dominant_sp[2] == "AB" ||
+      dominant_sp[2] == "PB" ||
+      dominant_sp[2] == "PM"||
+      dominant_sp[2] == "PM_AM" ||
+      dominant_sp[2] == "TO"){
+      X_mat$Forest_Type[i] = "c" # forest type conifer
+      
+  }else if (dominant_sp[1] == "BA" || # if both species deciduous
+            dominant_sp[1] == "BP" ||
+            dominant_sp[1] == "PT" &&
+            dominant_sp[2] == "BA" ||
+            dominant_sp[2] == "BP" ||
+            dominant_sp[2] == "PT"){
+    X_mat$Forest_Type[i] = "d" # forest type deciduous 
+    
+  }else if (dominant_sp[1] == "BP_AB" || # if either species is mixed
+            dominant_sp[1] == "BP_PM" ||
+            dominant_sp[1] == "PT_AB"|| 
+            dominant_sp[1] == "PT_PM" ||
+            dominant_sp[1] == "BP_AB" ||
+            dominant_sp[1] == "BP_PM" ||
+            dominant_sp[1] == "PT_AB"|| 
+            dominant_sp[1] == "PT_PM"){
+    X_mat$Forest_Type[i] = "m"  # forest type mixed
+    
+  }else if(dominant_sp[1] == "AB" || # if first species is conifer, second is deciduous 
+            dominant_sp[1] == "PB" ||
+            dominant_sp[1] == "PM"||
+            dominant_sp[1] == "PM_AB" ||
+            dominant_sp[1] == "TO" &&
+            dominant_sp[2] == "BA" ||
+            dominant_sp[2] == "BP" ||
+            dominant_sp[2] == "PT"){
+    X_mat$Forest_Type[i] = "m" # forest type mixed
+    
+  }else if(dominant_sp[1] == "BA" || # if first species is deciduous, second is conifer
+            dominant_sp[1] == "BP" ||
+            dominant_sp[1] == "PT" &&
+            dominant_sp[2] == "AB" ||
+            dominant_sp[2] == "PB" ||
+            dominant_sp[2] == "PM"||
+            dominant_sp[2] == "PM_AB" ||
+            dominant_sp[2] == "TO"){
+            X_mat$Forest_Type[i] = "m" # forest type mixed
+}else{
+  X_mat$Forest_Type[i] = "n" # non-forested - other
+}
+}
+
+# checking the dimensions of the dataframe when we select for specific cateogires
+# tells us that the conifer type dominates
+# this difference will be normalized later when we take the difference 
+
+dim(dplyr::filter(X_mat,Forest_Type=="c")) 
+dim(dplyr::filter(X_mat,Forest_Type=="d")) 
+dim(dplyr::filter(X_mat,Forest_Type=="m"))
+dim(dplyr::filter(X_mat,Forest_Type=="n")) 
+
+```
+
+I then created a rainfall index. I calculated the median annual usable precipitation (cm) which was 5cm/ year. I used this as a threshold and defined any plot with annual usable precipitation \> 5cm to a high precipitation category (H) and below this threshold to low annual rainfall (L).
+
+```{r,include=TRUE,echo=TRUE}
+# Classifying as high or low precipitation ----
+# PRECU is the annual rainfall variable 
+
+med <- median(X_mat$PRECU)
+# will use the median as the threshold 
+
+X_mat <- X_mat %>% 
+  mutate(., RainFall = case_when(PRECU < med ~ "L", 
+            PRECU >= med ~ "H")) 
+
+```
+
+Finally, I combined the forest type and rainfall variables into an index (rf index) that described the rainfall category followed by the forest type (e.g. H_c = high rainfall, conifer forest).
+
+```{r,include=TRUE,echo=TRUE}
+# Combining and classifying as forest type - rainfall index
+X_mat <- 
+  X_mat %>% 
+  unite(., rf_index, c("RainFall","Forest_Type"), sep = "_", remove =F, na.rm = FALSE)
+
+# writing altered data as .csv ----
+write.csv(X_mat, here::here("data","X_mat_processed.csv"))
+```
+
+**Plotting (script: "part-3_data_analysis")**
+
+I constructed box plots displaying percent cover of each species as the response variable and rf (rainfall forest cover index) as the grouping variable using using ggplot2::ggplot. I decided to log-transform the response variable since the data was skewed with outliers making the display and comparison between groups difficult in all of the plots.
+
+```{r, include=TRUE,echo=TRUE}
+# loading in prepared data ----
+  X_mat <- read.csv(here::here("data","X_mat_processed.csv"))
+  X_mat <- X_mat %>% 
+    select(CLE, Forest_Type, PRECU, RainFall,rf_index) 
+  
+  Y_mat <- read.csv(here::here("data","Matrice_Y.csv"),
+                    sep = ";") # response variables (mean ericaceous cover, in %)
+  clim <- read.csv(here::here("data","Climate_value.csv"),
+                   sep = ";") # numerical codes used for clim vars in X_mat
+  
+# PLOTTING WITH BOX PLOTS----
+  
+  # For Chamaedaphne calyculata
+  # creating dataframe with only this species
+  CAL <- data.frame(Y_mat$V_CAL,X_mat$PRECU, X_mat$rf_index) 
+  colnames(CAL) <- c("V_CAL","PRECU","rf_index") # renaming columns 
+  CAL_plot <- ggplot(data=CAL, aes(x=rf_index, y=V_CAL)) + 
+    geom_boxplot() # plotting only this species with the rainfall-forest
+    # type index in box plots
+  
+  CAL_plot <- ggplot(data=CAL, aes(x=rf_index, y=log(V_CAL))) + # log transforming the y axis 
+    geom_boxplot()  # automatically removes observations with 0 % cover - which is ok 
+  
+  # Repeating for Rhododendron groenlandicum
+  RHG <- data.frame(Y_mat$V_RHG,X_mat$PRECU,X_mat$rf_index) 
+  colnames(RHG) <- c("V_RHG","PRECU","rf_index") 
+  RHG_plot <- ggplot(data=RHG, aes(x=rf_index, y=V_RHG)) + 
+    geom_boxplot() 
+  
+  RHG_plot <- ggplot(data=RHG, aes(x=rf_index, y=log(V_RHG))) + # log transforming the y axis 
+    geom_boxplot() 
+  
+## Repeating for Kalmia angustifolia
+  # Plotting: 
+  KAA <- data.frame(Y_mat$V_KAA,X_mat$PRECU,X_mat$rf_index) 
+  colnames(KAA) <- c("V_KAA","PRECU","rf_index") 
+  KAA_plot <- ggplot(data=KAA, aes(x=rf_index, y=V_KAA)) + 
+    geom_boxplot() 
+  
+  KAA_plot <- ggplot(data=KAA, aes(x=rf_index, y=log(V_KAA))) + # log transforming the y axis 
+    geom_boxplot()  
+  
+## Repeating for Vaccinium sp. 
+    VAAM <- data.frame(Y_mat$V_VAAM,X_mat$PRECU,X_mat$rf_index) 
+    colnames(VAAM) <- c("V_VAAM","PRECU","rf_index")
+    
+   VAAM_plot <-ggplot(data=VAAM, aes(x=rf_index, y=V_VAAM)) +
+      geom_boxplot() 
+    
+    VAAM_plot <- ggplot(data=VAAM, aes(x=rf_index, y=log(V_VAAM))) + # log transforming the y axis 
+      geom_boxplot()  
+    
+```
+
+I then combined all of the above plots into one single chart for easier comparison.
+
+```{r,echo=FALSE, include=FALSE}
+## Plotting altogether in facets 
+    # creating new variable to denote species to make table with all species
+    CAL <- CAL %>% 
+      add_column("species" = "CAL") %>%  # adding column with species names
+      rename(cover ="V_CAL") # renaming percent cover column to represent all species
+    
+    RHG <- RHG %>% 
+      add_column("species" = "RHG") %>% 
+      rename(cover ="V_RHG")
+    
+    KAA <- KAA %>% 
+      add_column("species" = "KAA") %>% 
+      rename(cover ="V_KAA")
+    
+    VAAM <- VAAM %>% 
+      add_column("species" = "VAAM") %>% 
+      rename(cover ="V_VAAM")
+    
+    plot_cover <- rbind(CAL,RHG, KAA, VAAM) # combining all species by rows into table 
+    
+    ## creating ggplot object
+    p <- ggplot(data= plot_cover, aes(x=rf_index, y=log(cover))) + # log transforming 
+      geom_boxplot()+
+      xlab("Rainfall-Forest Type Index (RF)") + # changing x axis labe
+      ylab("Log (% cover)")+ # changing y axis label
+      # changing plot themes for angled text and no gridlines
+      theme(axis.text.x = element_text(angle = 45, vjust = 0.5), 
+            panel.grid = element_blank())
+    
+    ## function to changes names to each plot in facet 
+    # from https://stackoverflow.com/questions/3472980/how-to-change-facet-labels
+      species_names <- list(
+        'CAL'="C. calyculata",
+        'KAA'="K. angustifolia",
+        'RHG'="R. groenlandicum",
+        'VAAM'="Vaccinium sp."
+      )
+      
+      species_labeller <- function(variable,value){
+        return(species_names[value])
+      }
+    
+    ## creating facet plot with all species plots in one graph 
+    p + facet_wrap( ~ species, scales="free",
+                    labeller=species_labeller)
+    
+    # exporting plot to jpeg
+    jpeg(file=here::here("outputs","Cover-RF_Box-Plot.jpeg"))
+    p + facet_wrap( ~ species, scales="free",
+                    labeller=species_labeller)
+    dev.off()
+```
+
+**Statistical analysis**
+
+I used a Kruksal-Wallis test to determine if any any groups were significantly different from the rest, or in other words, if at least one rainfall forest cateogry contains a significantly different percent cover of a given species than the other groups. For all species, p \<0.05 indicating we can reject the null hypothesis that percent cover is the same across rainfall forest type categories for all species. To further assess the relationships, I performed a pairwise wilcox test to determine whether percent cover differed significantly from each other in pairs. This was not in the initial pre-registration but is an extended step to further test the hypothesis.
+
+```{r,echo=FALSE, include=FALSE}
+ # We want to know is there any significant difference between percent over of plants in different rainfall and forest type conditions 
+    
+    ## 1) C. calyculata
+      # Kruksal-Wallis test to determine if significant difference between means of rf-index groups
+      CAL_cover <- plot_cover %>% filter(species=="CAL") # creating daframe with only this species
+      kruskal.test(cover ~ rf_index, data = CAL_cover) # performing test - P < 0.05 - yes, indicates significatn differences between groups 
+      # use pairwise wilcox test to determine which groups different 
+      CAL_wt <- pairwise.wilcox.test(CAL_cover$cover, CAL_cover$rf_index,
+                           p.adjust.method = "BH")
+      CAL_wt_pframe <- data.frame(CAL_wt[["p.value"]]) # taking p-value matrix and coercing to dataframe
+      write.csv(CAL_wt_pframe, here::here("outputs","Ccalyculata_pframe.csv")) # saving dataframe as csv
+      write.csv(CAL_wt_pframe>=0.05, here::here("outputs","Ccalyculata_pframe_binary.csv")) # saving data frame indicating p< 0.05 for each paru
+      
+      # Creating matrix of difference between medians to pair with the p-value table 
+      CAL_meds <- CAL_cover %>% # summarizing by rf group
+        group_by(rf_index) %>% 
+        summarise(
+          median = median(cover, na.rm = TRUE) # calculating median for each group
+        )
+      
+      CAL_meds_diff <- as.data.frame(outer(CAL_meds$median, CAL_meds$median, FUN= "-")) # creating pairwise difference matrix between medians
+      colnames(CAL_meds_diff) <- CAL_meds$rf_index # renaming to have rf index names
+      rownames(CAL_meds_diff) <- CAL_meds$rf_index
+      write.csv(CAL_meds_diff, here::here("outputs","Ccalyculata_med_differences.csv")) # saving this file as .csv
+      
+    ##2) Repeating for K. angustifolia
+      # Kruksal-Wallis test to determine if significant difference between means of rf-index groups
+      KAA_cover <- plot_cover %>% filter(species=="KAA") # creating daframe with only this species
+      kruskal.test(cover ~ rf_index, data = KAA_cover) # performing test - P < 0.05 - yes, indicates significatn differences between groups 
+      # use pairwise wilcox test to determine which groups different 
+      KAA_wt <- pairwise.wilcox.test(KAA_cover$cover, KAA_cover$rf_index,
+                           p.adjust.method = "BH")
+      KAA_wt_pframe <- data.frame(KAA_wt[["p.value"]])
+      write.csv(KAA_wt_pframe, here::here("outputs","Kangust_pframe.csv"))
+      write.csv(KAA_wt_pframe>=0.05, here::here("outputs","Kangust_pframe_binary.csv"))
+      
+      # Creating matrix of difference between medians to pair with the p-value table 
+      KAA_meds <- KAA_cover %>% 
+        group_by(rf_index) %>% 
+        summarise(
+          median = median(cover, na.rm = TRUE)
+        )
+      
+      KAA_meds_diff <- as.data.frame(outer(KAA_meds$median, KAA_meds$median, FUN= "-"))
+      colnames(KAA_meds_diff) <- KAA_meds$rf_index
+      rownames(KAA_meds_diff) <- KAA_meds$rf_index
+      write.csv(KAA_meds_diff, here::here("outputs","Kangust_med_differences.csv"))
+      
+    ##3) R. groenlandicum
+      # Kruksal-Wallis test to determine if significant difference between means of rf-index groups
+      RHG_cover <- plot_cover %>% filter(species=="RHG") # creating daframe with only this species
+      kruskal.test(cover ~ rf_index, data = RHG_cover) # performing test - P < 0.05 - yes, indicates significatn differences between groups 
+      # use pairwise wilcox test to determine which groups different 
+      RHG_wt <- pairwise.wilcox.test(RHG_cover$cover, RHG_cover$rf_index,
+                           p.adjust.method = "BH")
+      RHG_wt_pframe <- data.frame(RHG_wt[["p.value"]])
+      write.csv(RHG_wt_pframe, here::here("outputs","Rgroenlandicum_pframe.csv"))
+      write.csv(RHG_wt_pframe>=0.05, here::here("outputs","Rgroenlandicum_pframe_binary.csv"))
+      
+      # Creating matrix of difference between medians to pair with the p-value table 
+      RHG_meds <- RHG_cover %>% 
+        group_by(rf_index) %>% 
+        summarise(
+          median = median(cover, na.rm = TRUE)
+        )
+      
+      RHG_meds_diff <- as.data.frame(outer(RHG_meds$median, RHG_meds$median, FUN= "-"))
+      colnames(RHG_meds_diff) <- RHG_meds$rf_index
+      rownames(RHG_meds_diff) <- RHG_meds$rf_index
+      write.csv(RHG_meds_diff, here::here("outputs","Rgroenlandicum_med_differences.csv"))
+      
+    ##4) Vaccinium sp.
+      # Kruksal-Wallis test to determine if significant difference between means of rf-index groups
+      VAAM_cover <- plot_cover %>% filter(species=="VAAM") # creating daframe with only this species
+      kruskal.test(cover ~ rf_index, data = VAAM_cover) # performing test - P < 0.05 - yes, indicates significatn differences between groups 
+      # use pairwise wilcox test to determine which groups different 
+      VAAM_wt <- pairwise.wilcox.test(VAAM_cover$cover, VAAM_cover$rf_index,
+                           p.adjust.method = "BH")
+      VAAM_wt_pframe <- data.frame(VAAM_wt[["p.value"]])
+      write.csv(VAAM_wt_pframe, here::here("outputs","Vaccinium_pframe.csv"))
+      write.csv(VAAM_wt_pframe>=0.05, here::here("outputs","Vaccinium_pframe_binary.csv"))
+      
+      # Creating matrix of difference between medians to pair with the p-value table 
+      VAAM_meds <- VAAM_cover %>% 
+        group_by(rf_index) %>% 
+        summarise(
+          median = median(cover, na.rm = TRUE)
+        )
+      
+      VAAM_meds_diff <- as.data.frame(outer(VAAM_meds$median, VAAM_meds$median, FUN= "-"))
+      colnames(VAAM_meds_diff) <- VAAM_meds$rf_index
+      rownames(VAAM_meds_diff) <- VAAM_meds$rf_index
+      
+```
+
+# Results & Discussion
+
+```{r}
+p + facet_wrap( ~ species, scales="free",
+                    labeller=species_labeller)
+```
+
+**Figure 1.** Box plots of *C. calyculata*, *K. angustifolia*, *R. groenlandicum*, and *Vaccinium sp*. percent cover in plots that fall in each of the rainfall-forest type categories. The thick horizontal lines represent the median for each category. The y axis was log-transformed for display purposes.
+
+**Table 1.** Mean % cover for *C. calyculata* in different rainfall forest type categories.
+
+```{r}
+CAL_cover %>% group_by(rf_index) %>% summarise(median = median(cover, na.rm=T))%>% 
+  arrange(desc(median))
+```
+
+For *C. calyculata,* the only rainfall forest type category that had median percent cover above 0 was high rainfall coniferous forests. This supports the prediction that this species would have a greater preference for this category possibly due to the higher acidity and moisture provided.
+
+**Table 2.** Mean % cover for *R. groenlandicum* in different rainfall forest type categories.
+
+```{r}
+RHG_cover %>% group_by(rf_index) %>% summarise(median = median(cover, na.rm=T)) %>% 
+  arrange(desc(median))
+```
+
+For *R. groenlandicum*, the order of my predictions also matched those observed. H_c had significantly higher percent cover than any other rf type (p\<0.05), followed by L-c, H_m, L_m H_d and L_d. This may indicate that *R. groenlandicum* indeed prefers more acidic soils created by higher rainfall, but mroe importantly coniferous forests. However, this is confounded with other factors that may drive its preference for coniferous habitat such as other soil properties associated with conifer needles and light availability.
+
+**Table 3.** Mean % cover for *K. angustifolium* in different rainfall forest type categories.
+
+```{r}
+KAA_cover %>% group_by(rf_index) %>% summarise(median = median(cover, na.rm=T))%>% 
+  arrange(desc(median))
+```
+
+For *K. angustifolium* the patterns in abundance that I predicted (L-c, L-m, L-d, H-c, H-m, H-d) were not supported by those observed. The category with the highest median percent cover was non-forested area however this was not significantly different from abundance in high rainfall coniferous forests (p\>0.05). This may indicate that light-availability is a more important determinant of its distribution. Additionally, non-forested plots may often be boggy areas with acidic soils from sphagnum growth, so perhaps this species' distribution is highly driven by soil acidity, so much so that the acidity produced by conifer needles and high rainfall is not sufficient. The fact that low rainfall coniferous forests had one of the lowest percent covers is curious. It suggests that other factors not included here should be included in further assessments of distribution.
+
+```{r}
+VAAM_cover %>% group_by(rf_index) %>% summarise(median = median(cover, na.rm=T)) %>% 
+  arrange(desc(median))
+```
+
+Finally, for *Vaccinium sp.* median percent cover again did not follow the pattern I predicted, except for H_d and H_m having the lowest values, however, they were not significantly different from each other (p\<0.05). the categories with higher abundance were H_c, H_n and L_n although they were not significantly different from each other (p\>0.05). H_c was significantly higher than L_c (p\<0.05) which I originally thought would contain the greatest abundance. This pattern might be similar in nature to the one observed for *K. angustifolium*, where coniferous and non-forested (presumably boggy) areas with high rainfall contain the most abundance, possibly due to the importance of acidity in these environments compared to those associated with deciduous or mixed forests.
+
+Analysis to test if these species distributions are driven partly by soil acidity could ideally be performed using direct measures of soil acidity at the plots rather than the proxy variables used here. Upon future visits to the sites, these measurements could be taken to construct models and compare preferences between species to better predict what drives their distribution patterns and regenerative ability in logging and fire disturbed habitats.
 
 # References
 
@@ -106,56 +507,34 @@ don't use this then they are put at the end of the document by default -->
 ::: {#refs}
 :::
 
-\newpage
-
-# Tables
-
-**Table 1.** Mean body mass of penguins on different islands over time.
-
-Note: for the word version the `kable` does not output correctly. You could try using `flextable` package instead: <https://taehoonh.me/content/post/alternative-to-kable-function-when-knitting-to-ms-word.html>
-
-\`\`\`{#{r table_01, message=FALSE, warning=FALSE, include=FALSE, paged.print=TRUE}
-
-# without the "hold_position" the table ends up at the top of the page
-
-    \newpage
-
-    # Figure Captions
-
-    **Figure 1**. Pretty coloured dots about penguins
-
-    **Figure 2**. Wow, even prettier plot about penguins that shows stuff
-
-    \newpage
-
-    # Figures
-
-    ![]()
-
-    Figure 1.
-
-    \newpage
-
-    ```{#{r figure_02, echo=FALSE, message=FALSE, warning=FALSE}
-
-Figure 2.
+```{r results = 'asis'}
+grateful::cite_packages(output = "paragraph")
+```
 
 \newpage
 
-Figure 3.
+# Appendix
 
-`{#{r file="../scripts/figure_03.R"} # this code chunk calls an external script to generate the plot. If you # want to load or run code not for a plot you could also use the following. # Note that it does not seem to work for plots. # source("../scripts/figure_03.R", local = knitr::knit_global())`
+**Table A1.** P-Values for Pairwise Wilcox test for *C. calyculata*
 
-\newpage
+```{r}
+CAL_wt_pframe
+```
 
-# Appendices
+**Table A2.** P-Values for Pairwise Wilcox test for *R. groenlandicum*
 
-```{=html}
-<!-- You might want to look into Bookdown if you want to do anything fancier
-with your manuscript. Bookdown allows for automatic Table and Figure numbering
-as well as cross referencing. That is you can create links between 'Fig 1' in
-your manuscript that links to the actual figure and automatically the
-the figure number as you add or remove them from the document.
-I add this here because Appendices can require special handling by some 
-journals and Bookdown might allow you to do that automagically -->
+```{r}
+RHG_wt_pframe
+```
+
+**Table A3.** P-Values for Pairwise Wilcox test for *K. angustifolium*
+
+```{r}
+KAA_wt_pframe
+```
+
+**Table A4.** P-Values for Pairwise Wilcox test for *Vaccinium sp.*
+
+```{r}
+VAAM_wt_pframe
 ```
