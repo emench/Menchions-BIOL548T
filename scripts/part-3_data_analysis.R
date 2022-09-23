@@ -5,6 +5,7 @@
 # This script is to prepare the data from Thiffault et al. (2016) for another analysis
 
 # Loading packages ----
+library(groundhog)
 date <- "2022-09-02"
 requiredPackages <-  c("ggplot2","here", "tidyverse","tidyr","Rfast","dplyr")
 
@@ -25,7 +26,7 @@ for (pkg in requiredPackages) {
   clim <- read.csv(here::here("data","Climate_value.csv"),
                    sep = ";") # numerical codes used for clim vars in X_mat
   
-# PLOTTING WITH BAR CHARTS ----
+# PLOTTING WITH BOX PLOTS----
   
   # For Chamaedaphne calyculata
   CAL <- data.frame(Y_mat$V_CAL,X_mat$PRECU, X_mat$rf_index) # creating dataframe with only this species
@@ -112,7 +113,7 @@ for (pkg in requiredPackages) {
                     labeller=species_labeller)
     
     # exporting plot to jpeg
-    jpeg(file=here::here("outputs","Cover-RF_Bar-Chart.jpeg"))
+    jpeg(file=here::here("outputs","Cover-RF_Box-Plot.jpeg"))
     p + facet_wrap( ~ species, scales="free",
                     labeller=species_labeller)
     dev.off()
