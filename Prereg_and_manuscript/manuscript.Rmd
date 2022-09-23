@@ -28,7 +28,7 @@ library(groundhog)
 
 # installing & loading packages
 date <- "2022-09-02"
-requiredPackages <-  c("here", "tidyverse","tidyr","Rfast","dplyr")
+requiredPackages <-  c("ggplot2","here", "tidyverse","tidyr","Rfast","dplyr")
 
 for (pkg in requiredPackages) {
   if (pkg %in% rownames(installed.packages()) == FALSE)
@@ -41,7 +41,7 @@ for (pkg in requiredPackages) {
 
 **Title**: Can gradients in annual rainfall & forest type predict the distribution & abundance of 4 Ericaceous shrubs? - BIOL 548T LDP
 
-Emma Menchons^1^\*
+Emma Menchions^1^\*
 
 1.  Dept. of Botany, University of British Columbia, Vancouver, BC, Canada
 
@@ -51,17 +51,11 @@ email: emma.menchions\@botany.ubc.ca
 
 **Author Contributions:** EM conceived of the study, conducted the analyses, and wrote the original, and revised drafts of the manuscript.
 
-**Data Availability:** The data and code that support the findings of this study are openly available on Zenodo / GitHub at <https://link_to_archived_release_or_GitHub.com>.
-
-If I was publishing this as an HTML document and wanted the link to be pretty versus human readable, I would use [this format](https://link_to_archived_release_or_GitHub.com) instead
+**Data Availability:** The data and code that support the findings of this study are openly available on GitHub at <https://github.com/emench/Menchions-BIOL548T>.
 
 **Conflict of Interest statement**
 
 No conflicts of interest
-
-**Acknowledgements:** We would like to thank a whole bunch of people.
-
-\newpage
 
 # Abstract
 
@@ -79,14 +73,37 @@ No conflicts of interest
 
 # Introduction
 
+Four species of Ericaceae dominate the understory in the northern boreal forests of Quebec, Canada. Two of these species *Rhododenron groenlandicum* and *Chamaedaphne caluculata* are said to prefer acidic soils and wetter habitats whereas the other dominant species *Kalmia angustifolia*, *Vaccinium angustifolium*, and *Vaccinium myrtillodes* are known to prefer drier, but also acidic soils. Many factors contribute to soil acidity, but a few variables in particular, rainfall and forest type have been observed to drive broad patterns in soil pH in the United States (2). Therefore, I ask, can annual rainfall and forest type (conifer, deciduous, or mixed) predict patterns of abundance for these species in the boreal zone of Northern Quebec between 1985 and 2000?
+
+Acidic soils are often associated with conifer forests and higher rainfall (1,2). Therefore, species with a preference for more acidic soils should be more often found in conifer forest types with higher precipitation. Therefore, I predict that *R. groenlandicum* and *C. calyculata*, will have the highest mean percent cover in areas with conifer forest types and higher annual precipitation. In contrast, I predict that *K. angustifolia* and *Vaccinium sp.*, will have the highest mean percent cover in conifer forests with lower annual precipitation.
+
+Specifically, I predict the following pattern of mean percent cover for *R. groenlandicum* and *C. calyculata*: (H = high precipitation, L = low precipitation, c= conifer forests, d=deciduous forests, m =mixed forest)
+
+From highest to lowest predicted mean percent cover with high rainfall and conifer forests being indicative of higher abundance: H-c, L-c, H-m, H-d, L-m, L-d
+
+For *K. angustifolium* and *Vaccinium sp.* I predict the following pattern, with less rainfall being of greater importance to abundance: L-c, L-m, L-d, H-c, H-m, H-d
+
 # Methods
 
-To evaluate the ...
+**Data collection**
 
-The above demonstrates both "inline" and "display" math formats. If you look at the Source version you will see that it is simply the number of \$ symbols before and after that differentiates between the two. An excellent (and simple) guide on inserting math into your R Markdown documents can be found here:\
-<https://rpruim.github.io/s341/S19/from-class/MathinRmd.html>
+Data was retrieved from (3): <https://datadryad.org/stash/dataset/doi:10.5061%2Fdryad.4767v>. According to Thiffault et al. (2016), the data on abundance of the 4 species were collected from 15,339 circular plots across central and northern Quebec along 1.5 -- 2 km long transects of which supported 5-7 plots. Forest type: was determined by visual estimations at the time that the plots were visited by assigning a type corresponding to the two most dominant tree species within the plot.This lead to a total of 15 total forest types. Climate data was collected by identifying the closest meteorological station (51 in the study region) and correcting for differences in latitude, longitude and elevation between the plot and the station using distance weighting and multiple linear regression.
 
-Statistical analyses were carried out in R 3.4.0 (R Core Team 2017). All code along with the simulation algorithms used are available on Zenodo / GitHub <https://link_to_archived_release_or_GitHub.com>.
+**Data download**
+
+All data download, preparation and statistical analyses were carried out in R 4.2.1 (R Core Team 2022). All scripts used are available on Zenodo / GitHub <https://github.com/emench/Menchions-BIOL548T>. I first retrieved this data from Dryad using a script that automates the download from Dryad.
+
+**Data preparation**
+
+I then prepared the data for analysis by altering the forest type classification and creating a variable indicating whether the plot was in a high or low rainfall area. For the forest type classifications, I used the metadata on forest type codes provided to create 4 categories of forest type: "c" (coniferous, if the two dominant tree species in the plot were both coniferous, n=1282), "d" (deciduous, if the two dominant species were both deciduous, n=45), "m" (mixed, if the two most dominant species contained a conifer and a deciduous species, n=69), and "n" (non-forested, n=26).
+
+I then created a rainfall index. I calculated the median annual usable precipitation (cm) which was 5cm/ year. I used this as a threshold and defined any plot with annual usable precipitation \> 5cm to a high precipitation category (H) and below this threshold to low annual rainfall (L).
+
+Finally, I combined the forest type and rainfall variables into an index (rf index) that described the rainfall category followed by the forest type (e.g. H_c = high rainfall, conifer forest).
+
+**Plotting**
+
+I constructed box plots using using ggplot2::ggplot
 
 # Results
 
