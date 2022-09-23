@@ -25,8 +25,7 @@ for (pkg in requiredPackages) {
   clim <- read.csv(here::here("data","Climate_value.csv"),
                    sep = ";") # numerical codes used for clim vars in X_mat
   
-# Analysis 1 ----
-  # creating bar charts and anova
+# PLOTTING WITH BAR CHARTS ----
   
   # For Chamaedaphne calyculata
   CAL <- data.frame(Y_mat$V_CAL,X_mat$PRECU, X_mat$rf_index) # creating dataframe with only this species
@@ -87,12 +86,38 @@ for (pkg in requiredPackages) {
     
     plot_cover <- rbind(CAL,RHG, KAA, VAAM) # combining all species by rows into one table 
     
+    ## creating ggplot object
     p <- ggplot(data= plot_cover, aes(x=rf_index, y=log(cover))) + # log transforming the y axis for easier pattern detection
-      geom_boxplot() 
+      geom_boxplot()+
+      xlab("Rainfall-Forest Type Index (RF)") + # changing x axis labe
+      ylab("Log (% cover)")+ # changing y axis label
+      theme(axis.text.x = element_text(angle = 45, vjust = 0.5), # changing plot themes for angled text and no gridlines
+            panel.grid = element_blank())
     
-    p + facet_wrap( ~ species, scales="free")
+    ## function to changes names to each plot in facet 
+    # from https://stackoverflow.com/questions/3472980/how-to-change-facet-labels
+      species_names <- list(
+        'CAL'="C. calyculata",
+        'KAA'="K. angustifolia",
+        'RHG'="R. groenlandicum",
+        'VAAM'="Vaccinium sp."
+      )
+      
+      species_labeller <- function(variable,value){
+        return(species_names[value])
+      }
     
+    ## creating facet plot with all species plots in one graph 
+    p + facet_wrap( ~ species, scales="free",
+                    labeller=species_labeller)
     
+    # exporting plot to jpeg
+    jpeg(file=here::here("outputs","Cover-RF_Bar-Chart.jpeg"))
+    p + facet_wrap( ~ species, scales="free",
+                    labeller=species_labeller)
+    dev.off()
+
+## ANOVA Analysis ----    
     
     
     
