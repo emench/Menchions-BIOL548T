@@ -117,7 +117,118 @@ for (pkg in requiredPackages) {
                     labeller=species_labeller)
     dev.off()
 
-## ANOVA Analysis ----    
+## Stats analysis ----    
+    # using dplyr to compare summary stats
+    group_by(plot_cover, species) %>%
+      summarise(
+        count = n(),
+        mean = mean(cover, na.rm = TRUE),
+        sd = sd(cover, na.rm = TRUE),
+        median = median(cover, na.rm = TRUE),
+        IQR = IQR(cover, na.rm = TRUE)
+      )
     
+    # We want to know is there any significant difference between percent over of plants in different rainfall and forest type conditions 
     
-    
+    ## 1) C. calyculata
+      # Kruksal-Wallis test to determine if significant difference between means of rf-index groups
+      CAL_cover <- plot_cover %>% filter(species=="CAL") # creating daframe with only this species
+      kruskal.test(cover ~ rf_index, data = CAL_cover) # performing test - P < 0.05 - yes, indicates significatn differences between groups 
+      # use pairwise wilcox test to determine which groups different 
+      CAL_wt <- pairwise.wilcox.test(CAL_cover$cover, CAL_cover$rf_index,
+                           p.adjust.method = "BH")
+      
+      # significant differences (p< 0.05): H_d vs H_c ; H_m vs H_d ; L_c vs H_d ; L_m vs H_c ; L_m vs L_c 
+      
+      CAL_wt_pframe <- data.frame(CAL_wt[["p.value"]]) # taking p-value matrix and coercing to dataframe
+      write.csv(CAL_wt_pframe, here::here("outputs","Ccalyculata_pframe.csv")) # saving dataframe as csv
+      write.csv(CAL_wt_pframe>=0.05, here::here("outputs","Ccalyculata_pframe_binary.csv")) # saving data frame indicating p< 0.05 for each paru
+      
+      # Creating matrix of difference between medians to pair with the p-value table 
+      CAL_meds <- CAL_cover %>% # summarizing by rf group
+        group_by(rf_index) %>% 
+        summarise(
+          median = median(cover, na.rm = TRUE) # calculating median for each group
+        )
+      
+      CAL_meds_diff <- as.data.frame(outer(CAL_meds$median, CAL_meds$median, FUN= "-")) # creating pairwise difference matrix between medians
+      colnames(CAL_meds_diff) <- CAL_meds$rf_index # renaming to have rf index names
+      rownames(CAL_meds_diff) <- CAL_meds$rf_index
+      write.csv(CAL_meds_diff, here::here("outputs","Ccalyculata_med_differences.csv")) # saving this file as .csv
+      
+    ##2) Repeating for K. angustifolia
+      # Kruksal-Wallis test to determine if significant difference between means of rf-index groups
+      KAA_cover <- plot_cover %>% filter(species=="KAA") # creating daframe with only this species
+      kruskal.test(cover ~ rf_index, data = KAA_cover) # performing test - P < 0.05 - yes, indicates significatn differences between groups 
+      # use pairwise wilcox test to determine which groups different 
+      KAA_wt <- pairwise.wilcox.test(KAA_cover$cover, KAA_cover$rf_index,
+                           p.adjust.method = "BH")
+      
+      # significant differences (P<0.05): H_c vs H_d ; H_c vs H_m ; H_c vs L_c ; H_d vs H_n ; H_m vs H_n ; H_m vs L_m ; H_n vs L_c ; H_n vs L_m 
+      KAA_wt_pframe <- data.frame(KAA_wt[["p.value"]])
+      write.csv(KAA_wt_pframe, here::here("outputs","Kangust_pframe.csv"))
+      write.csv(KAA_wt_pframe>=0.05, here::here("outputs","Kangust_pframe_binary.csv"))
+      
+      # Creating matrix of difference between medians to pair with the p-value table 
+      KAA_meds <- KAA_cover %>% 
+        group_by(rf_index) %>% 
+        summarise(
+          median = median(cover, na.rm = TRUE)
+        )
+      
+      KAA_meds_diff <- as.data.frame(outer(KAA_meds$median, KAA_meds$median, FUN= "-"))
+      colnames(KAA_meds_diff) <- KAA_meds$rf_index
+      rownames(KAA_meds_diff) <- KAA_meds$rf_index
+      write.csv(KAA_meds_diff, here::here("outputs","Kangust_med_differences.csv"))
+      
+    ##3) R. groenlandicum
+      # Kruksal-Wallis test to determine if significant difference between means of rf-index groups
+      RHG_cover <- plot_cover %>% filter(species=="RHG") # creating daframe with only this species
+      kruskal.test(cover ~ rf_index, data = RHG_cover) # performing test - P < 0.05 - yes, indicates significatn differences between groups 
+      # use pairwise wilcox test to determine which groups different 
+      RHG_wt <- pairwise.wilcox.test(RHG_cover$cover, RHG_cover$rf_index,
+                           p.adjust.method = "BH")
+      
+      # significant differences (P<0.05): all types with H_c; H_d vs H_m ; H_d vs H_n ; H_d vs L_c ; L_c vs L_d ; L_c vs L_m ; L_c vs L_n 
+      RHG_wt_pframe <- data.frame(RHG_wt[["p.value"]])
+      write.csv(RHG_wt_pframe, here::here("outputs","Rgroenlandicum_pframe.csv"))
+      write.csv(RHG_wt_pframe>=0.05, here::here("outputs","Rgroenlandicum_pframe_binary.csv"))
+      
+      # Creating matrix of difference between medians to pair with the p-value table 
+      RHG_meds <- RHG_cover %>% 
+        group_by(rf_index) %>% 
+        summarise(
+          median = median(cover, na.rm = TRUE)
+        )
+      
+      RHG_meds_diff <- as.data.frame(outer(RHG_meds$median, RHG_meds$median, FUN= "-"))
+      colnames(RHG_meds_diff) <- RHG_meds$rf_index
+      rownames(RHG_meds_diff) <- RHG_meds$rf_index
+      write.csv(RHG_meds_diff, here::here("outputs","Rgroenlandicum_med_differences.csv"))
+      
+    ##4) Vaccinium sp.
+      # Kruksal-Wallis test to determine if significant difference between means of rf-index groups
+      VAAM_cover <- plot_cover %>% filter(species=="VAAM") # creating daframe with only this species
+      kruskal.test(cover ~ rf_index, data = VAAM_cover) # performing test - P < 0.05 - yes, indicates significatn differences between groups 
+      # use pairwise wilcox test to determine which groups different 
+      VAAM_wt <- pairwise.wilcox.test(VAAM_cover$cover, VAAM_cover$rf_index,
+                           p.adjust.method = "BH")
+      
+      VAAM_wt_pframe <- data.frame(VAAM_wt[["p.value"]])
+      write.csv(VAAM_wt_pframe, here::here("outputs","Vaccinium_pframe.csv"))
+      write.csv(VAAM_wt_pframe>=0.05, here::here("outputs","Vaccinium_pframe_binary.csv"))
+      # significant differences (P<0.05): H_c vs H_d; H_c vs H_m; H_c vs L_c ; H_c vs L_m; H_d vs L_c; H_d vs L_n ; H_m vs L_c; H_m vs L_n
+      
+      # Creating matrix of difference between medians to pair with the p-value table 
+      VAAM_meds <- VAAM_cover %>% 
+        group_by(rf_index) %>% 
+        summarise(
+          median = median(cover, na.rm = TRUE)
+        )
+      
+      VAAM_meds_diff <- as.data.frame(outer(VAAM_meds$median, VAAM_meds$median, FUN= "-"))
+      colnames(VAAM_meds_diff) <- VAAM_meds$rf_index
+      rownames(VAAM_meds_diff) <- VAAM_meds$rf_index
+      
+      
+      
