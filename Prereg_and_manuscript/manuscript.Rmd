@@ -89,23 +89,369 @@ For *K. angustifolium* and *Vaccinium sp.* I predict the following pattern, with
 
 Data was retrieved from (3): <https://datadryad.org/stash/dataset/doi:10.5061%2Fdryad.4767v>. According to Thiffault et al. (2016), the data on abundance of the 4 species were collected from 15,339 circular plots across central and northern Quebec along 1.5 -- 2 km long transects of which supported 5-7 plots. Forest type: was determined by visual estimations at the time that the plots were visited by assigning a type corresponding to the two most dominant tree species within the plot.This lead to a total of 15 total forest types. Climate data was collected by identifying the closest meteorological station (51 in the study region) and correcting for differences in latitude, longitude and elevation between the plot and the station using distance weighting and multiple linear regression.
 
-**Data download**
+**Data download (script: "part-1_data_download")**
 
 All data download, preparation and statistical analyses were carried out in R 4.2.1 (R Core Team 2022). All scripts used are available on Zenodo / GitHub <https://github.com/emench/Menchions-BIOL548T>. I first retrieved this data from Dryad using a script that automates the download from Dryad.
 
-**Data preparation**
+```{r include=TRUE}
+# creating directory to store data
+dir.create("data")
+
+## downloading from dryad url ----
+
+data.url <- "https://datadryad.org/stash/downloads/file_stream/41575"
+metadata.url <- "https://datadryad.org/stash/downloads/file_stream/41576"
+
+data.dest.file <- paste0("data/","Data_ThriffaultEtAl_EcoEvo_",Sys.Date(),".zip")
+metadata.dest.file <- paste0("data/","Metadata_ThriffaultEtAl_EcoEvo_",Sys.Date(),".txt")
+
+unzip(download.file(url = data.url, destfile = data.dest.file),exdir = here::here("data"))
+download.file(url= metadata.url, destfile = metadata.dest.file)
+
+unzip(list.files(path = here::here("data"), pattern = "*.zip", full.names = TRUE),exdir = here::here("data"))
+
+```
+
+**Data preparation (script: "part-2_data_preparation")**
 
 I then prepared the data for analysis by altering the forest type classification and creating a variable indicating whether the plot was in a high or low rainfall area. For the forest type classifications, I used the metadata on forest type codes provided to create 4 categories of forest type: "c" (coniferous, if the two dominant tree species in the plot were both coniferous, n=1282), "d" (deciduous, if the two dominant species were both deciduous, n=45), "m" (mixed, if the two most dominant species contained a conifer and a deciduous species, n=69), and "n" (non-forested, n=26).
 
+```{r}
+# Loading data tables ----
+X_mat <- read.csv(here::here("data","Matrice_X.csv"),
+                  sep = ";") # explanatory variables - see metadata
+Y_mat <- read.csv(here::here("data","Matrice_Y.csv"),
+                  sep = ";") # response variables (mean ericaceous cover, in %)
+clim <- read.csv(here::here("data","Climate_value.csv"),
+                 sep = ";") # numerical codes used for clim vars in X_mat
+
+# Classifying Forest Type ----
+# Identifying two most dominant tree species in each plot and assigning forest type as 
+  # conifer (c)
+  # deciduous (d)
+  # mixed (m)
+# looping through each row of X_mat dataframe
+
+for (i in 1:dim(X_mat)[1]){
+  most_abun <-  as.numeric(Rfast::nth(as.matrix(X_mat[i,2:14]), k=1, descending = T,index.return = T)) # returning the index of the column with the most abundant tree species for each row
+  sec_abun <- as.numeric(Rfast::nth(as.matrix(X_mat[i,2:14]), k=2, descending = T,index.return = T)) # returning index of second most abundant species
+  dominant_sp <- c(most_abun, sec_abun)+1 # adding 1 to account for the first column which was left out of vector for previous function
+  dominant_sp <- colnames(X_mat)[dominant_sp] # creating character vector containing column names of most dominant species 
+  
+  if (dominant_sp[1] == "AB" || # if both species conifers
+      dominant_sp[1] == "PB" ||
+      dominant_sp[1] == "PM"||
+      dominant_sp[1] == "PM_AB" ||
+      dominant_sp[1] == "TO" &&
+      dominant_sp[2] == "AB" ||
+      dominant_sp[2] == "PB" ||
+      dominant_sp[2] == "PM"||
+      dominant_sp[2] == "PM_AM" ||
+      dominant_sp[2] == "TO"){
+      X_mat$Forest_Type[i] = "c" # forest type conifer
+      
+  }else if (dominant_sp[1] == "BA" || # if both species deciduous
+            dominant_sp[1] == "BP" ||
+            dominant_sp[1] == "PT" &&
+            dominant_sp[2] == "BA" ||
+            dominant_sp[2] == "BP" ||
+            dominant_sp[2] == "PT"){
+    X_mat$Forest_Type[i] = "d" # forest type deciduous 
+    
+  }else if (dominant_sp[1] == "BP_AB" || # if either species is mixed
+            dominant_sp[1] == "BP_PM" ||
+            dominant_sp[1] == "PT_AB"|| 
+            dominant_sp[1] == "PT_PM" ||
+            dominant_sp[1] == "BP_AB" ||
+            dominant_sp[1] == "BP_PM" ||
+            dominant_sp[1] == "PT_AB"|| 
+            dominant_sp[1] == "PT_PM"){
+    X_mat$Forest_Type[i] = "m"  # forest type mixed
+    
+  }else if(dominant_sp[1] == "AB" || # if first species is conifer, second is deciduous 
+            dominant_sp[1] == "PB" ||
+            dominant_sp[1] == "PM"||
+            dominant_sp[1] == "PM_AB" ||
+            dominant_sp[1] == "TO" &&
+            dominant_sp[2] == "BA" ||
+            dominant_sp[2] == "BP" ||
+            dominant_sp[2] == "PT"){
+    X_mat$Forest_Type[i] = "m" # forest type mixed
+    
+  }else if(dominant_sp[1] == "BA" || # if first species is deciduous, second is conifer
+            dominant_sp[1] == "BP" ||
+            dominant_sp[1] == "PT" &&
+            dominant_sp[2] == "AB" ||
+            dominant_sp[2] == "PB" ||
+            dominant_sp[2] == "PM"||
+            dominant_sp[2] == "PM_AB" ||
+            dominant_sp[2] == "TO"){
+            X_mat$Forest_Type[i] = "m" # forest type mixed
+}else{
+  X_mat$Forest_Type[i] = "n" # non-forested - other
+}
+}
+
+# checking the dimensions of the dataframe when we select for specific cateogires
+# tells us that the conifer type dominates
+# this difference will be normalized later when we take the difference 
+
+dim(dplyr::filter(X_mat,Forest_Type=="c")) 
+dim(dplyr::filter(X_mat,Forest_Type=="d")) 
+dim(dplyr::filter(X_mat,Forest_Type=="m"))
+dim(dplyr::filter(X_mat,Forest_Type=="n")) 
+
+```
+
 I then created a rainfall index. I calculated the median annual usable precipitation (cm) which was 5cm/ year. I used this as a threshold and defined any plot with annual usable precipitation \> 5cm to a high precipitation category (H) and below this threshold to low annual rainfall (L).
+
+```{r}
+# Classifying as high or low precipitation ----
+# PRECU is the annual rainfall variable 
+
+med <- median(X_mat$PRECU)
+# will use the median as the threshold 
+
+X_mat <- X_mat %>% 
+  mutate(., RainFall = case_when(PRECU < med ~ "L", 
+            PRECU >= med ~ "H")) 
+
+```
 
 Finally, I combined the forest type and rainfall variables into an index (rf index) that described the rainfall category followed by the forest type (e.g. H_c = high rainfall, conifer forest).
 
-**Plotting**
+```{r}
+# Combining and classifying as forest type - rainfall index
+X_mat <- 
+  X_mat %>% 
+  unite(., rf_index, c("RainFall","Forest_Type"), sep = "_", remove =F, na.rm = FALSE)
 
-I constructed box plots using using ggplot2::ggplot
+# writing altered data as .csv ----
+write.csv(X_mat, here::here("data","X_mat_processed.csv"))
+```
+
+**Plotting (script: "part-3_data_analysis")**
+
+I constructed box plots displaying percent cover of each species as the response variable and rf (rainfall forest cover index) as the grouping variable using using ggplot2::ggplot. I decided to log-transform the response variable since the data was skewed with outliers making the display and comparison between groups difficult in all of the plots.
+
+```{r}
+# loading in prepared data ----
+  X_mat <- read.csv(here::here("data","X_mat_processed.csv"))
+  X_mat <- X_mat %>% 
+    select(CLE, Forest_Type, PRECU, RainFall,rf_index) 
+  
+  Y_mat <- read.csv(here::here("data","Matrice_Y.csv"),
+                    sep = ";") # response variables (mean ericaceous cover, in %)
+  clim <- read.csv(here::here("data","Climate_value.csv"),
+                   sep = ";") # numerical codes used for clim vars in X_mat
+  
+# PLOTTING WITH BOX PLOTS----
+  
+  # For Chamaedaphne calyculata
+  CAL <- data.frame(Y_mat$V_CAL,X_mat$PRECU, X_mat$rf_index) # creating dataframe with only this species
+  colnames(CAL) <- c("V_CAL","PRECU","rf_index") # renaming columns 
+  ggplot(data=CAL, aes(x=rf_index, y=V_CAL)) + # plotting only this species with the rainfall-forest type index in box plots
+    geom_boxplot() 
+  
+  ggplot(data=CAL, aes(x=rf_index, y=log(V_CAL))) + # log transforming the y axis for easier pattern detection
+    geom_boxplot()  # automatically removes observations with 0 % cover - which is ok 
+  
+  # For Rhododendron groenlandicum
+  RHG <- data.frame(Y_mat$V_RHG,X_mat$PRECU,X_mat$rf_index) # creating dataframe with only this species
+  colnames(RHG) <- c("V_RHG","PRECU","rf_index") # renaming columns 
+  ggplot(data=RHG, aes(x=rf_index, y=V_RHG)) + # plotting only this species with the rainfall-forest type index in box plots
+    geom_boxplot() 
+  
+  ggplot(data=RHG, aes(x=rf_index, y=log(V_RHG))) + # log transforming the y axis for easier pattern detection
+    geom_boxplot()  # automatically removes observations with 0 % cover - which is ok 
+  
+## For Kalmia angustifolia
+  # Plotting: 
+  KAA <- data.frame(Y_mat$V_KAA,X_mat$PRECU,X_mat$rf_index) # creating dataframe with only this species
+  colnames(KAA) <- c("V_KAA","PRECU","rf_index") # renaming columns
+  
+  ggplot(data=KAA, aes(x=rf_index, y=V_KAA)) + # plotting only this species with the rainfall-forest type index in box plots
+    geom_boxplot() 
+  
+  ggplot(data=KAA, aes(x=rf_index, y=log(V_KAA))) + # log transforming the y axis for easier pattern detection
+    geom_boxplot()  # automatically removes observations with 0 % cover - which is ok 
+  
+## For Vaccinium sp. 
+    VAAM <- data.frame(Y_mat$V_VAAM,X_mat$PRECU,X_mat$rf_index) # creating dataframe with only this species
+    colnames(VAAM) <- c("V_VAAM","PRECU","rf_index") # renaming columns
+    
+    ggplot(data=VAAM, aes(x=rf_index, y=V_VAAM)) + # plotting only this species with the rainfall-forest type index in box plots
+      geom_boxplot() 
+    
+    ggplot(data=VAAM, aes(x=rf_index, y=log(V_VAAM))) + # log transforming the y axis for easier pattern detection
+      geom_boxplot()  # automatically removes observations with 0 % cover - which is ok 
+    
+```
+
+I then combined all of the above plots into one single chart for easier comparison.
+
+```{r}
+## Plotting altogether in facets 
+    # creating new variable to denote species to make table with all species
+    CAL <- CAL %>% 
+      add_column("species" = "CAL") %>%  # adding column with species names
+      rename(cover ="V_CAL") # renaming percent cover column to represent all species
+    
+    RHG <- RHG %>% 
+      add_column("species" = "RHG") %>% 
+      rename(cover ="V_RHG")
+    
+    KAA <- KAA %>% 
+      add_column("species" = "KAA") %>% 
+      rename(cover ="V_KAA")
+    
+    VAAM <- VAAM %>% 
+      add_column("species" = "VAAM") %>% 
+      rename(cover ="V_VAAM")
+    
+    plot_cover <- rbind(CAL,RHG, KAA, VAAM) # combining all species by rows into one table 
+    
+    ## creating ggplot object
+    p <- ggplot(data= plot_cover, aes(x=rf_index, y=log(cover))) + # log transforming the y axis for easier pattern detection
+      geom_boxplot()+
+      xlab("Rainfall-Forest Type Index (RF)") + # changing x axis labe
+      ylab("Log (% cover)")+ # changing y axis label
+      theme(axis.text.x = element_text(angle = 45, vjust = 0.5), # changing plot themes for angled text and no gridlines
+            panel.grid = element_blank())
+    
+    ## function to changes names to each plot in facet 
+    # from https://stackoverflow.com/questions/3472980/how-to-change-facet-labels
+      species_names <- list(
+        'CAL'="C. calyculata",
+        'KAA'="K. angustifolia",
+        'RHG'="R. groenlandicum",
+        'VAAM'="Vaccinium sp."
+      )
+      
+      species_labeller <- function(variable,value){
+        return(species_names[value])
+      }
+    
+    ## creating facet plot with all species plots in one graph 
+    p + facet_wrap( ~ species, scales="free",
+                    labeller=species_labeller)
+    
+    # exporting plot to jpeg
+    jpeg(file=here::here("outputs","Cover-RF_Box-Plot.jpeg"))
+    p + facet_wrap( ~ species, scales="free",
+                    labeller=species_labeller)
+    dev.off()
+```
+
+**Statistical analysis**
+
+I used a Kruksal-Wallis test to determine if any any groups were significantly different from the rest, or in other words, if at least one rainfall forest cateogry contains a significantly different percent cover of a given species than the other groups. For all species, p \<0.05 indicating we can reject the null hypothesis that percent cover is the same across rainfall forest type categories for all species. To further assess the relationships, I performed a pairwise wilcox test to determine whether percent cover differed significantly from each other in pairs. This was not in the initial pre-registration but is an extended step to further test the hypothesis.
+
+```{r}
+ # We want to know is there any significant difference between percent over of plants in different rainfall and forest type conditions 
+    
+    ## 1) C. calyculata
+      # Kruksal-Wallis test to determine if significant difference between means of rf-index groups
+      CAL_cover <- plot_cover %>% filter(species=="CAL") # creating daframe with only this species
+      kruskal.test(cover ~ rf_index, data = CAL_cover) # performing test - P < 0.05 - yes, indicates significatn differences between groups 
+      # use pairwise wilcox test to determine which groups different 
+      CAL_wt <- pairwise.wilcox.test(CAL_cover$cover, CAL_cover$rf_index,
+                           p.adjust.method = "BH")
+      CAL_wt_pframe <- data.frame(CAL_wt[["p.value"]]) # taking p-value matrix and coercing to dataframe
+      write.csv(CAL_wt_pframe, here::here("outputs","Ccalyculata_pframe.csv")) # saving dataframe as csv
+      write.csv(CAL_wt_pframe>=0.05, here::here("outputs","Ccalyculata_pframe_binary.csv")) # saving data frame indicating p< 0.05 for each paru
+      
+      # Creating matrix of difference between medians to pair with the p-value table 
+      CAL_meds <- CAL_cover %>% # summarizing by rf group
+        group_by(rf_index) %>% 
+        summarise(
+          median = median(cover, na.rm = TRUE) # calculating median for each group
+        )
+      
+      CAL_meds_diff <- as.data.frame(outer(CAL_meds$median, CAL_meds$median, FUN= "-")) # creating pairwise difference matrix between medians
+      colnames(CAL_meds_diff) <- CAL_meds$rf_index # renaming to have rf index names
+      rownames(CAL_meds_diff) <- CAL_meds$rf_index
+      write.csv(CAL_meds_diff, here::here("outputs","Ccalyculata_med_differences.csv")) # saving this file as .csv
+      
+    ##2) Repeating for K. angustifolia
+      # Kruksal-Wallis test to determine if significant difference between means of rf-index groups
+      KAA_cover <- plot_cover %>% filter(species=="KAA") # creating daframe with only this species
+      kruskal.test(cover ~ rf_index, data = KAA_cover) # performing test - P < 0.05 - yes, indicates significatn differences between groups 
+      # use pairwise wilcox test to determine which groups different 
+      KAA_wt <- pairwise.wilcox.test(KAA_cover$cover, KAA_cover$rf_index,
+                           p.adjust.method = "BH")
+      KAA_wt_pframe <- data.frame(KAA_wt[["p.value"]])
+      write.csv(KAA_wt_pframe, here::here("outputs","Kangust_pframe.csv"))
+      write.csv(KAA_wt_pframe>=0.05, here::here("outputs","Kangust_pframe_binary.csv"))
+      
+      # Creating matrix of difference between medians to pair with the p-value table 
+      KAA_meds <- KAA_cover %>% 
+        group_by(rf_index) %>% 
+        summarise(
+          median = median(cover, na.rm = TRUE)
+        )
+      
+      KAA_meds_diff <- as.data.frame(outer(KAA_meds$median, KAA_meds$median, FUN= "-"))
+      colnames(KAA_meds_diff) <- KAA_meds$rf_index
+      rownames(KAA_meds_diff) <- KAA_meds$rf_index
+      write.csv(KAA_meds_diff, here::here("outputs","Kangust_med_differences.csv"))
+      
+    ##3) R. groenlandicum
+      # Kruksal-Wallis test to determine if significant difference between means of rf-index groups
+      RHG_cover <- plot_cover %>% filter(species=="RHG") # creating daframe with only this species
+      kruskal.test(cover ~ rf_index, data = RHG_cover) # performing test - P < 0.05 - yes, indicates significatn differences between groups 
+      # use pairwise wilcox test to determine which groups different 
+      RHG_wt <- pairwise.wilcox.test(RHG_cover$cover, RHG_cover$rf_index,
+                           p.adjust.method = "BH")
+      RHG_wt_pframe <- data.frame(RHG_wt[["p.value"]])
+      write.csv(RHG_wt_pframe, here::here("outputs","Rgroenlandicum_pframe.csv"))
+      write.csv(RHG_wt_pframe>=0.05, here::here("outputs","Rgroenlandicum_pframe_binary.csv"))
+      
+      # Creating matrix of difference between medians to pair with the p-value table 
+      RHG_meds <- RHG_cover %>% 
+        group_by(rf_index) %>% 
+        summarise(
+          median = median(cover, na.rm = TRUE)
+        )
+      
+      RHG_meds_diff <- as.data.frame(outer(RHG_meds$median, RHG_meds$median, FUN= "-"))
+      colnames(RHG_meds_diff) <- RHG_meds$rf_index
+      rownames(RHG_meds_diff) <- RHG_meds$rf_index
+      write.csv(RHG_meds_diff, here::here("outputs","Rgroenlandicum_med_differences.csv"))
+      
+    ##4) Vaccinium sp.
+      # Kruksal-Wallis test to determine if significant difference between means of rf-index groups
+      VAAM_cover <- plot_cover %>% filter(species=="VAAM") # creating daframe with only this species
+      kruskal.test(cover ~ rf_index, data = VAAM_cover) # performing test - P < 0.05 - yes, indicates significatn differences between groups 
+      # use pairwise wilcox test to determine which groups different 
+      VAAM_wt <- pairwise.wilcox.test(VAAM_cover$cover, VAAM_cover$rf_index,
+                           p.adjust.method = "BH")
+      VAAM_wt_pframe <- data.frame(VAAM_wt[["p.value"]])
+      write.csv(VAAM_wt_pframe, here::here("outputs","Vaccinium_pframe.csv"))
+      write.csv(VAAM_wt_pframe>=0.05, here::here("outputs","Vaccinium_pframe_binary.csv"))
+      
+      # Creating matrix of difference between medians to pair with the p-value table 
+      VAAM_meds <- VAAM_cover %>% 
+        group_by(rf_index) %>% 
+        summarise(
+          median = median(cover, na.rm = TRUE)
+        )
+      
+      VAAM_meds_diff <- as.data.frame(outer(VAAM_meds$median, VAAM_meds$median, FUN= "-"))
+      colnames(VAAM_meds_diff) <- VAAM_meds$rf_index
+      rownames(VAAM_meds_diff) <- VAAM_meds$rf_index
+      
+```
 
 # Results
+
+\# CAL significant differences (p\< 0.05): H_d vs H_c ; H_m vs H_d ; L_c vs H_d ; L_m vs H_c ; L_m vs L_c
+
+\# KAA significant differences (P\<0.05): H_c vs H_d ; H_c vs H_m ; H_c vs L_c ; H_d vs H_n ; H_m vs H_n ; H_m vs L_m ; H_n vs L_c ; H_n vs L_m
+
+\# RHGsignificant differences (P\<0.05): all types with H_c; H_d vs H_m ; H_d vs H_n ; H_d vs L_c ; L_c vs L_d ; L_c vs L_m ; L_c vs L_n
+
+\# VAAM significant differences (P\<0.05): H_c vs H_d; H_c vs H_m; H_c vs L_c ; H_c vs L_m; H_d vs L_c; H_d vs L_n ; H_m vs L_c; H_m vs L_n
 
 # Discussion
 
