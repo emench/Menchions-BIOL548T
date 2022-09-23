@@ -62,13 +62,7 @@ No conflicts of interest
 
 # Abstract
 
-1.  Ecologists often have lots of questions about lots of stuff
-
-2.  We evaluated a bunch of things using sophisticated methods and carried out complicated statistical tests
-
-3.  We discovered a bunch of things that we didn't already know but suspected
-
-4.  Our research has greatly advanced out knowledge about stuff and will make a significant contribution to something and someone
+Patterns in plant distributions are driven by a multitude of factors, one of which is soil properties. For many ericaeceous shrubs, high acidity soils are often an important determinant of distribution. Here I used data collected from @thiffault2015c across plots in the understory of boreal forests of Quebec from 1985 to 2000 to determine if the abundance of four species of ericeceous shrubs (*Chamaedaphne caluculata, Rhododenron groenlandicum, Kalmia angustifolia* and*Vaccinium sp.* ) can be predicted by patterns in soil acidity with habitat. Specifically, since conifer forests with high rainfall are typically associated with more highly acidic soils, I predicted this habitat type would contain the highest abundance of of these shrubs, and in particular *C. caluculata and R. groenlandicum* since they also prefer wetter habitats. For *K. angustifolia* and*Vaccinium sp.* I predicted that low rainfall coniferous forests would contain the greatest abundance due to high acidity from the conifers and lower moisture which these species supposedly prefer. I used box plots and pariwise Wilcox tests to compare medians between percent cover of different types of habitats defined by high or low rain fall and forest type. I found that for *C. caluculata and R. groenlandicum,* my predictions were quite close to the observed patterns, suggesting that perhaps soil acidity and moisture are primary drivers of distribution. However, for *K. angustifolia* and*Vaccinium sp.* my predictions did not match the results. However, conifer forests and non-forested (presumably boggy areas) plots did tend to contain the highest median abundance which may also suggest soil acidity as a strong driver of distribution. Future studies and analyses should use more direct observations of soil pH measurements to study these patterns rather than relying on the proxy variable of rainfall and forest type used here to avoid the many confounding factors that this index introduces.
 
 **Key-words**: Ecology, Ericaceae, LDP, Plant Ecology, Vegetation Mapping, Vegetation Patterns
 
@@ -76,9 +70,9 @@ No conflicts of interest
 
 # Introduction
 
-Four species of Ericaceae dominate the understory in the northern boreal forests of Quebec, Canada. Two of these species *Rhododenron groenlandicum* and *Chamaedaphne caluculata* are said to prefer acidic soils and wetter habitats whereas the other dominant species *Kalmia angustifolia*, *Vaccinium angustifolium*, and *Vaccinium myrtillodes* are known to prefer drier, but also acidic soils. Many factors contribute to soil acidity, but a few variables in particular, rainfall and forest type have been observed to drive broad patterns in soil pH in the United States (2). Therefore, I ask, can annual rainfall and forest type (conifer, deciduous, or mixed) predict patterns of abundance for these species in the boreal zone of Northern Quebec between 1985 and 2000?
+Four species of Ericaceae dominate the understory in the northern boreal forests of Quebec, Canada. Two of these species *Rhododenron groenlandicum* and *Chamaedaphne caluculata* are said to prefer acidic soils and wetter habitats whereas the other dominant species *Kalmia angustifolia*, *Vaccinium angustifolium*, and *Vaccinium myrtillodes* are known to prefer drier, but also acidic soils. Many factors contribute to soil acidity, but a few variables in particular, rainfall and forest type have been observed to drive broad patterns in soil pH in the United States @soilaci. Therefore, I ask, can annual rainfall and forest type (conifer, deciduous, or mixed) predict patterns of abundance for these species in the boreal zone of Northern Quebec between 1985 and 2000?
 
-Acidic soils are often associated with conifer forests and higher rainfall (1,2). Therefore, species with a preference for more acidic soils should be more often found in conifer forest types with higher precipitation. Therefore, I predict that *R. groenlandicum* and *C. calyculata*, will have the highest mean percent cover in areas with conifer forest types and higher annual precipitation. In contrast, I predict that *K. angustifolia* and *Vaccinium sp.*, will have the highest mean percent cover in conifer forests with lower annual precipitation.
+Acidic soils are often associated with conifer forests and higher rainfall [@hornung1985; @soilacia]. Therefore, species with a preference for more acidic soils should be more often found in conifer forest types with higher precipitation. Therefore, I predict that *R. groenlandicum* and *C. calyculata*, will have the highest mean percent cover in areas with conifer forest types and higher annual precipitation. In contrast, I predict that *K. angustifolia* and *Vaccinium sp.*, will have the highest mean percent cover in conifer forests with lower annual precipitation.
 
 Specifically, I predict the following pattern of mean percent cover for *R. groenlandicum* and *C. calyculata*: (H = high precipitation, L = low precipitation, c= conifer forests, d=deciduous forests, m =mixed forest)
 
@@ -90,11 +84,11 @@ For *K. angustifolium* and *Vaccinium sp.* I predict the following pattern, with
 
 **Data collection**
 
-Data was retrieved from (3): <https://datadryad.org/stash/dataset/doi:10.5061%2Fdryad.4767v>. According to Thiffault et al. (2016), the data on abundance of the 4 species were collected from 15,339 circular plots across central and northern Quebec along 1.5 -- 2 km long transects of which supported 5-7 plots. Forest type: was determined by visual estimations at the time that the plots were visited by assigning a type corresponding to the two most dominant tree species within the plot.This lead to a total of 15 total forest types. Climate data was collected by identifying the closest meteorological station (51 in the study region) and correcting for differences in latitude, longitude and elevation between the plot and the station using distance weighting and multiple linear regression.
+Data was retrieved from @thiffault2015a: <https://datadryad.org/stash/dataset/doi:10.5061%2Fdryad.4767v>. According to @thiffault2015b, the data on abundance of the 4 species were collected from 15,339 circular plots across central and northern Quebec along 1.5 -- 2 km long transects of which supported 5-7 plots. Forest type: was determined by visual estimations at the time that the plots were visited by assigning a type corresponding to the two most dominant tree species within the plot.This lead to a total of 15 total forest types. Climate data was collected by identifying the closest meteorological station (51 in the study region) and correcting for differences in latitude, longitude and elevation between the plot and the station using distance weighting and multiple linear regression.
 
 **Data download (script: "part-1_data_download")**
 
-All data download, preparation and statistical analyses were carried out in R 4.2.1 (R Core Team 2022). All scripts used are available on Zenodo / GitHub <https://github.com/emench/Menchions-BIOL548T>. I first retrieved this data from Dryad using a script that automates the download from Dryad.
+All data download, preparation and statistical analyses were carried out in R 4.2.1 (R Core Team 2022). All scripts used are available on GitHub <https://github.com/emench/Menchions-BIOL548T>. I first retrieved this data from Dryad using a script that automates the download from Dryad.
 
 ```{r eval=FALSE, warning=FALSE, include=FALSE}
 # creating directory to store data
@@ -119,7 +113,7 @@ unzip(list.files(path = here::here("data"), pattern = "*.zip", full.names = TRUE
 
 I then prepared the data for analysis by altering the forest type classification and creating a variable indicating whether the plot was in a high or low rainfall area. For the forest type classifications, I used the metadata on forest type codes provided to create 4 categories of forest type: "c" (coniferous, if the two dominant tree species in the plot were both coniferous, n=1282), "d" (deciduous, if the two dominant species were both deciduous, n=45), "m" (mixed, if the two most dominant species contained a conifer and a deciduous species, n=69), and "n" (non-forested, n=26).
 
-```{r, include=TRUE,echo=TRUE}
+```{r, include=TRUE,echo=F}
 # Loading data tables ----
 X_mat <- read.csv(here::here("data","Matrice_X.csv"),
                   sep = ";") # explanatory variables - see metadata
@@ -260,7 +254,7 @@ I constructed box plots displaying percent cover of each species as the response
   # creating dataframe with only this species
   CAL <- data.frame(Y_mat$V_CAL,X_mat$PRECU, X_mat$rf_index) 
   colnames(CAL) <- c("V_CAL","PRECU","rf_index") # renaming columns 
-  ggplot(data=CAL, aes(x=rf_index, y=V_CAL)) + 
+  CAL_plot <- ggplot(data=CAL, aes(x=rf_index, y=V_CAL)) + 
     geom_boxplot() # plotting only this species with the rainfall-forest
     # type index in box plots
   
@@ -466,7 +460,8 @@ p + facet_wrap( ~ species, scales="free",
 **Table 1.** Mean % cover for *C. calyculata* in different rainfall forest type categories.
 
 ```{r}
-CAL_cover %>% group_by(rf_index) %>% summarise(median = median(cover, na.rm=T)) %>% arrange(desc(median))
+CAL_cover %>% group_by(rf_index) %>% summarise(median = median(cover, na.rm=T))%>% 
+  arrange(desc(median))
 ```
 
 For *C. calyculata,* the only rainfall forest type category that had median percent cover above 0 was high rainfall coniferous forests. This supports the prediction that this species would have a greater preference for this category possibly due to the higher acidity and moisture provided.
@@ -474,7 +469,8 @@ For *C. calyculata,* the only rainfall forest type category that had median perc
 **Table 2.** Mean % cover for *R. groenlandicum* in different rainfall forest type categories.
 
 ```{r}
-RHG_cover %>% group_by(rf_index) %>% summarise(median = median(cover, na.rm=T)) %>% arrange(desc(median))
+RHG_cover %>% group_by(rf_index) %>% summarise(median = median(cover, na.rm=T)) %>% 
+  arrange(desc(median))
 ```
 
 For *R. groenlandicum*, the order of my predictions also matched those observed. H_c had significantly higher percent cover than any other rf type (p\<0.05), followed by L-c, H_m, L_m H_d and L_d. This may indicate that *R. groenlandicum* indeed prefers more acidic soils created by higher rainfall, but mroe importantly coniferous forests. However, this is confounded with other factors that may drive its preference for coniferous habitat such as other soil properties associated with conifer needles and light availability.
@@ -482,22 +478,18 @@ For *R. groenlandicum*, the order of my predictions also matched those observed.
 **Table 3.** Mean % cover for *K. angustifolium* in different rainfall forest type categories.
 
 ```{r}
-KAA_cover %>% group_by(rf_index) %>% summarise(median = median(cover, na.rm=T)) %>% arrange(desc(median))
+KAA_cover %>% group_by(rf_index) %>% summarise(median = median(cover, na.rm=T))%>% 
+  arrange(desc(median))
 ```
 
-For *K. angustifolium* the patterns in abundance that I predicted (L-c, L-m, L-d, H-c, H-m, H-d) were not supported by those observed. The category with the highest median percent cover was non-forested area however this was not significantly different from abundance in high rainfall coniferous forests (p\>0.05). This may indicate that light-availability is a more important determinant of its distribution. Additionally, non-forested plots may often be boggy areas with acidic soils from sphagnum growth, so perhaps this species' distribution is highly driven by soil acidity, so much so that the acidity produced by conifer needles and high rainfall is not sufficient.
+For *K. angustifolium* the patterns in abundance that I predicted (L-c, L-m, L-d, H-c, H-m, H-d) were not supported by those observed. The category with the highest median percent cover was non-forested area however this was not significantly different from abundance in high rainfall coniferous forests (p\>0.05). This may indicate that light-availability is a more important determinant of its distribution. Additionally, non-forested plots may often be boggy areas with acidic soils from sphagnum growth, so perhaps this species' distribution is highly driven by soil acidity, so much so that the acidity produced by conifer needles and high rainfall is not sufficient. The fact that low rainfall coniferous forests had one of the lowest percent covers is curious. It suggests that other factors not included here should be included in further assessments of distribution.
 
 ```{r}
-VAAM_cover %>% group_by(rf_index) %>% summarise(median = median(cover, na.rm=T)) %>% arrange(desc(median))
+VAAM_cover %>% group_by(rf_index) %>% summarise(median = median(cover, na.rm=T)) %>% 
+  arrange(desc(median))
 ```
 
-Finally, for *Vaccinium sp.*
-
-For *K. angustifolium* and *Vaccinium sp.* I predict the following pattern, with less rainfall being of greater importance to abundance: L-c, L-m, L-d, H-c, H-m, H-d
-
-\# KAA significant differences (P\<0.05): H_c vs H_d ; H_c vs H_m ; H_c vs L_c ; H_d vs H_n ; H_m vs H_n ; H_m vs L_m ; H_n vs L_c ; H_n vs L_m
-
-\# VAAM significant differences (P\<0.05): H_c vs H_d; H_c vs H_m; H_c vs L_c ; H_c vs L_m; H_d vs L_c; H_d vs L_n ; H_m vs L_c; H_m vs L_n
+Finally, for *Vaccinium sp.* median percent cover again did not follow the pattern I predicted, except for H_d and H_m having the lowest values, however, they were not significantly different from each other (p\<0.05). the categories with higher abundance were H_c, H_n and L_n although they were not significantly different from each other (p\>0.05). H_c was significantly higher than L_c (p\<0.05) which I originally thought would contain the greatest abundance. This pattern might be similar in nature to the one observed for *K. angustifolium*, where coniferous and non-forested (presumably boggy) areas with high rainfall contain the most abundance, possibly due to the importance of acidity in these environments compared to those associated with deciduous or mixed forests.
 
 Analysis to test if these species distributions are driven partly by soil acidity could ideally be performed using direct measures of soil acidity at the plots rather than the proxy variables used here. Upon future visits to the sites, these measurements could be taken to construct models and compare preferences between species to better predict what drives their distribution patterns and regenerative ability in logging and fire disturbed habitats.
 
@@ -523,4 +515,26 @@ grateful::cite_packages(output = "paragraph")
 
 # Appendix
 
-**Table A1.**
+**Table A1.** P-Values for Pairwise Wilcox test for *C. calyculata*
+
+```{r}
+CAL_wt_pframe
+```
+
+**Table A2.** P-Values for Pairwise Wilcox test for *R. groenlandicum*
+
+```{r}
+RHG_wt_pframe
+```
+
+**Table A3.** P-Values for Pairwise Wilcox test for *K. angustifolium*
+
+```{r}
+KAA_wt_pframe
+```
+
+**Table A4.** P-Values for Pairwise Wilcox test for *Vaccinium sp.*
+
+```{r}
+VAAM_wt_pframe
+```
