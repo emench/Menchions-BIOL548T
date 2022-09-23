@@ -114,32 +114,29 @@ don't use this then they are put at the end of the document by default -->
 
 Note: for the word version the `kable` does not output correctly. You could try using `flextable` package instead: <https://taehoonh.me/content/post/alternative-to-kable-function-when-knitting-to-ms-word.html>
 
-```{#{r table_01, message=FALSE, warning=FALSE, include=FALSE, paged.print=TRUE}
+\`\`\`{#{r table_01, message=FALSE, warning=FALSE, include=FALSE, paged.print=TRUE}
 
 # without the "hold_position" the table ends up at the top of the page
-```
 
-\newpage
+    \newpage
 
-# Figure Captions
+    # Figure Captions
 
-**Figure 1**. Pretty coloured dots about penguins
+    **Figure 1**. Pretty coloured dots about penguins
 
-**Figure 2**. Wow, even prettier plot about penguins that shows stuff
+    **Figure 2**. Wow, even prettier plot about penguins that shows stuff
 
-\newpage
+    \newpage
 
-# Figures
+    # Figures
 
-![]()
+    ![]()
 
-Figure 1.
+    Figure 1.
 
-\newpage
+    \newpage
 
-```{#{r figure_02, echo=FALSE, message=FALSE, warning=FALSE}
-
-```
+    ```{#{r figure_02, echo=FALSE, message=FALSE, warning=FALSE}
 
 Figure 2.
 
@@ -147,12 +144,7 @@ Figure 2.
 
 Figure 3.
 
-```{#{r file="../scripts/figure_03.R"}
-# this code chunk calls an external script to generate the plot. If you
-# want to load or run code not for a plot you could also use the following.
-# Note that it does not seem to work for plots.
-# source("../scripts/figure_03.R", local = knitr::knit_global())
-```
+`{#{r file="../scripts/figure_03.R"} # this code chunk calls an external script to generate the plot. If you # want to load or run code not for a plot you could also use the following. # Note that it does not seem to work for plots. # source("../scripts/figure_03.R", local = knitr::knit_global())`
 
 \newpage
 
